@@ -35,9 +35,10 @@ int main(int argc, char const *argv[]) {
     // get resolutions of the input video
     int frame_width = cap.get(cv::CAP_PROP_FRAME_WIDTH);
     int frame_height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
+    double fps = cap.get(cv::CAP_PROP_FPS);
 
     // define the codec and create VideoWriter object
-    cv::VideoWriter video(output_file, cv::VideoWriter::fourcc('a', 'v', 'c', '1'), 10, cv::Size(frame_width, frame_height));
+    cv::VideoWriter video(output_file, cv::VideoWriter::fourcc('a', 'v', 'c', '1'), fps, cv::Size(frame_width, frame_height));
 
     while (true) {
         // TODO: read every 40ms - maybe use delta time to wait for next frame
@@ -52,7 +53,7 @@ int main(int argc, char const *argv[]) {
 
         cv::putText(frame, "Big Buck Bunny", cv::Point(0, 200), cv::FONT_HERSHEY_DUPLEX, 0.7, cv::Scalar(0, 0, 0), 2, false);
         // write the frame to file
-        video.write(frame); // FIXME: it save the wait time so the length is bigger, maybe skip frames or save in ram
+        video.write(frame);
 
         randomWait();
 
