@@ -1,5 +1,6 @@
 #include <opencv2/opencv.hpp>
 
+#include <chrono>
 #include <iostream>
 #include <string>
 #include <unistd.h>
@@ -40,8 +41,18 @@ int main(int argc, char const *argv[]) {
     // define the codec and create VideoWriter object
     cv::VideoWriter video(output_file, cv::VideoWriter::fourcc('a', 'v', 'c', '1'), fps, cv::Size(frame_width, frame_height));
 
+    auto timer_last = std::chrono::high_resolution_clock::now();
     while (true) {
-        // TODO: read every 40ms - maybe use delta time to wait for next frame
+        // TODO: read every 40ms - separate processing from capturing
+        auto timer_now = std::chrono::high_resolution_clock::now();
+        std::chrono::microseconds delta = std::chrono::duration_cast<std::chrono::microseconds>(timer_now - timer_last);
+        if (delta.count() / 1000 < 40) { // wait the time that left
+            usleep(40 * 1000 - delta.count());
+        }
+#ifdef DEBUG
+        std::cout << "loop took: " << ((double)delta.count()) / 1000 << " left: " << (40 * 1000 - delta.count()) / 1000 << "\n";
+#endif
+        timer_last = std::chrono::high_resolution_clock::now();
 
         cv::Mat frame;
         // capture frame-by-frame
