@@ -36,7 +36,7 @@ int main(int argc, char const *argv[]) {
     int frame_height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
 
     // Define the codec and create VideoWriter object
-    cv::VideoWriter video(output_file, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 10, cv::Size(frame_width, frame_height));
+    cv::VideoWriter video(output_file, cv::VideoWriter::fourcc('D', 'I', 'V', 'X'), 10, cv::Size(frame_width, frame_height));
 
     while (true) {
         // TODO: read every 40ms - maybe use delta time to wait for next frame
@@ -49,7 +49,7 @@ int main(int argc, char const *argv[]) {
         if (frame.empty())
             break;
 
-        // TODO: add on the frame "first blender video ;)"
+        cv::putText(frame, "first blender video ;)", cv::Point(0, 20), cv::FONT_HERSHEY_DUPLEX, 0.7, cv::Scalar(100, 255, 0), 1, false);
         // Write the frame to file
         video.write(frame);
 
@@ -57,7 +57,7 @@ int main(int argc, char const *argv[]) {
 
         // TODO: add option to turn on and off maybe -s for show
         // Display the resulting frame
-        imshow("Frame", frame);
+        imshow("Frame", frame); // FIXME: it save the wait time so the length is bigger, maybe skip frames or save in ram
 
         // Press ESC on keyboard to exit
         char c = (char)cv::waitKey(ESC);
