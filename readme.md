@@ -14,7 +14,10 @@
 
 ```bash
 $ make
-$ ./main <input file> <output>
+$ ./main <input file> <output> -s
 ```
-
+can add `DEBUG=1` to make to show debug info:
+```bash
+$ make DEBUG=1
+```
 press ESC to stop at any time
