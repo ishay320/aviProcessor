@@ -17,3 +17,4 @@ $ make
 $ ./main <input file> <output>
 ```
 
+press ESC to stop at any time

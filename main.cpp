@@ -2,8 +2,15 @@
 
 #include <iostream>
 #include <string>
+#include <unistd.h>
 
 #define ESC 25
+
+double randomWait() {
+    double r = ((double)rand() / (RAND_MAX));
+    usleep(r * 60 * 1000); // Sleep for a random time in range of 0-60 ms
+    return (r * 60 * 1000);
+}
 
 void usage(std::ostream &stream, std::string file_name) { stream << "usage: " << file_name << " <input file> <output>\n"; }
 
@@ -45,6 +52,8 @@ int main(int argc, char const *argv[]) {
         // TODO: add on the frame "first blender video ;)"
         // Write the frame to file
         video.write(frame);
+
+        randomWait();
 
         // TODO: add option to turn on and off maybe -s for show
         // Display the resulting frame
