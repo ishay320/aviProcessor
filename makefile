@@ -1,7 +1,7 @@
-
+CFLAGS=-Wall -Werror -std=c++11 -pedantic -ggdb `pkg-config --cflags --libs opencv4`
 
 main: main.cpp
-	g++ -o $@ $^ `pkg-config --cflags --libs opencv4`
+	g++ -o $@ $^ $(CFLAGS)
 
 clean:
 	rm -f main
