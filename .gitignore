@@ -5,3 +5,4 @@ test.mp4
 Dockerfile
 .dockerignore
 *.o
+test

@@ -12,10 +12,13 @@ endif
 main: main.cpp $(OBJECTS)
 	g++ -o $@ $^ $(CFLAGS) $(LIB)
 
+test: test.cpp $(OBJECTS)
+	g++ -o $@ $^ $(CFLAGS) $(LIB)
+
 %.o: %.cpp $(HEADERS)
 	g++ $(CFLAGS) --compile $< -o $@
 
 clean:
-	rm -f main *.o
+	rm -f main test *.o
 	
 .PHONY: clean

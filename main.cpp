@@ -13,7 +13,11 @@ int main(int argc, char const *argv[]) {
     std::string input_file;
     std::string output_file;
     bool show;
-    parser(argc, argv, input_file, output_file, show);
+    int err = parser(argc, argv, input_file, output_file, show);
+    if (err == 1) {
+        usage(std::cout, argv[0]);
+        return 1;
+    }
 
     // create a VideoCapture object and open the input file
     cv::VideoCapture cap(input_file);
