@@ -4,3 +4,4 @@ test.mp4
 .vscode
 Dockerfile
 .dockerignore
+*.o
