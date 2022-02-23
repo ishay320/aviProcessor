@@ -19,10 +19,10 @@ class FrameQueue {
 
   public:
     void workDone() {
-        push_work(cv::Mat()); // add an empty frame
+        pushWork(cv::Mat()); // add an empty frame
     }
 
-    void push_work(cv::Mat frame) {
+    void pushWork(cv::Mat frame) {
         std::unique_lock<std::mutex> lock(work_mutex); // overkill but fun
 
         bool was_empty = frames.empty();
@@ -35,7 +35,7 @@ class FrameQueue {
         }
     }
 
-    cv::Mat wait_and_pop() {
+    cv::Mat waitAndPop() {
         std::unique_lock<std::mutex> lock(work_mutex);
         while (frames.empty()) {
             work_available.wait(lock);
@@ -63,7 +63,7 @@ cv::Mat process(cv::Mat &frame) {
 
 void frameBufferManager(FrameQueue &frame_queue, cv::VideoWriter &video, bool show) {
     while (true) {
-        cv::Mat frame = frame_queue.wait_and_pop();
+        cv::Mat frame = frame_queue.waitAndPop();
         if (frame.empty()) // check for empty frames - end of work
             break;
 
@@ -153,7 +153,7 @@ int main(int argc, char const *argv[]) {
         if (frame.empty())
             break;
 
-        frame_queue.push_work(frame);
+        frame_queue.pushWork(frame);
 
         // press ESC on keyboard to exit
         char c = (char)cv::waitKey(ESC);
