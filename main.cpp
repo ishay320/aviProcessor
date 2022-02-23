@@ -1,10 +1,8 @@
-#include "opencv2/opencv.hpp"
-#include <iostream>
-#include <opencv2/core/mat.hpp>  // cv::Mat
-#include <opencv2/highgui.hpp>   // cv::imshow
-#include <opencv2/imgcodecs.hpp> // cv::imread
+#include <opencv2/opencv.hpp>
 
+#include <iostream>
 #include <string>
+
 #define ESC 25
 
 void usage(std::ostream &stream, std::string file_name) { stream << "usage: " << file_name << " <input file> <output>\n"; }
