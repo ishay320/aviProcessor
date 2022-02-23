@@ -1,4 +1,4 @@
-# avi decoder encoder
+# avi processor
 
 - use openCV for input and output
 - use C++11
@@ -7,7 +7,8 @@
 
 - dependencies.bash : is to install dependencies like openCV
 - makefile : is to compile my code
-- main.cpp : is the code
+- main.cpp : is the main code
+- test.cpp : is the testing with doctest
 <!-- - dockerfile : is for ease of cleaning -->
 
 # running the code
