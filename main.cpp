@@ -50,7 +50,7 @@ int main(int argc, char const *argv[]) {
         if (frame.empty())
             break;
 
-        cv::putText(frame, "first blender video ;)", cv::Point(0, 20), cv::FONT_HERSHEY_DUPLEX, 0.7, cv::Scalar(100, 255, 0), 1, false);
+        cv::putText(frame, "Big Buck Bunny", cv::Point(0, 200), cv::FONT_HERSHEY_DUPLEX, 0.7, cv::Scalar(0, 0, 0), 2, false);
         // write the frame to file
         video.write(frame); // FIXME: it save the wait time so the length is bigger, maybe skip frames or save in ram
 
