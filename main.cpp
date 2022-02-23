@@ -53,13 +53,10 @@ double randomWait() {
     return (r * 60 * 1000);
 }
 
-cv::Mat process(cv::Mat &frame, bool show) {
+cv::Mat process(cv::Mat &frame) {
     cv::putText(frame, "Big Buck Bunny", cv::Point(0, 200), cv::FONT_HERSHEY_DUPLEX, 0.7, cv::Scalar(0, 0, 0), 2, false);
 
     randomWait();
-
-    if (show) // display the resulting frame
-        imshow("Frame", frame);
 
     return frame;
 }
@@ -69,7 +66,12 @@ void frameBufferManager(FrameQueue &frame_queue, cv::VideoWriter &video, bool sh
         cv::Mat frame = frame_queue.wait_and_pop();
         if (frame.empty()) // check for empty frames - end of work
             break;
-        frame = process(frame, show);
+
+        frame = process(frame);
+
+        if (show) // display the resulting frame
+            imshow("Frame", frame);
+
         // write the frame to file
         video.write(frame);
     }
@@ -80,24 +82,31 @@ void usage(std::ostream &stream, std::string file_name) {
 \tcan add in the end: -s for showing in realtime\n";
 }
 
-int main(int argc, char const *argv[]) {
+void parser(int argc, char const *argv[], std::string &input_file, std::string &output_file, bool &show) {
     if (argc < 3) {
         usage(std::cout, argv[0]);
-        return 1;
+        exit(1);
     }
 
-    bool show = false;
+    show = false;
     if (argc == 4) {
         if (!strcmp(argv[3], "-s")) {
             show = true;
         } else {
             usage(std::cout, argv[0]);
-            return 1;
+            exit(1);
         }
     }
 
-    std::string input_file = argv[1];
-    std::string output_file = argv[2];
+    input_file = argv[1];
+    output_file = argv[2];
+}
+
+int main(int argc, char const *argv[]) {
+    std::string input_file;
+    std::string output_file;
+    bool show;
+    parser(argc, argv, input_file, output_file, show);
 
     // create a VideoCapture object and open the input file
     cv::VideoCapture cap(input_file);
@@ -119,6 +128,8 @@ int main(int argc, char const *argv[]) {
         std::cerr << "Error opening video stream or file" << std::endl;
         return 1;
     }
+
+    // start the processing thread and his queue
     FrameQueue frame_queue;
     std::thread thread_frames(frameBufferManager, std::ref(frame_queue), std::ref(video), show);
 
@@ -130,7 +141,7 @@ int main(int argc, char const *argv[]) {
             usleep(40 * 1000 - delta.count());
         }
 #ifdef DEBUG
-        std::cout << "loop took: " << ((double)delta.count()) / 1000 << " left: " << (40 * 1000 - delta.count()) / 1000 << "\n";
+        std::cout << "stream loop took: " << ((double)delta.count()) / 1000 << " waited: " << (40 * 1000 - delta.count()) / 1000 << "\n";
 #endif
         timer_last = std::chrono::high_resolution_clock::now();
 
