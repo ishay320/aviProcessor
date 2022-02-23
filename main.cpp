@@ -16,15 +16,14 @@ class FrameQueue {
     std::condition_variable work_available;
     std::mutex work_mutex;
     std::queue<cv::Mat> frames;
-    bool done_work = false;
 
   public:
     void workDone() {
-        done_work = true;
-        push_work(cv::Mat());
+        push_work(cv::Mat()); // add an empty frame
     }
+
     void push_work(cv::Mat frame) {
-        std::unique_lock<std::mutex> lock(work_mutex);
+        std::unique_lock<std::mutex> lock(work_mutex); // overkill but fun
 
         bool was_empty = frames.empty();
         frames.push(frame);
@@ -54,35 +53,49 @@ double randomWait() {
     return (r * 60 * 1000);
 }
 
-void process(cv::Mat &frame, cv::VideoWriter &video, bool show) {
+cv::Mat process(cv::Mat &frame, bool show) {
     cv::putText(frame, "Big Buck Bunny", cv::Point(0, 200), cv::FONT_HERSHEY_DUPLEX, 0.7, cv::Scalar(0, 0, 0), 2, false);
-    // write the frame to file
-    video.write(frame);
 
     randomWait();
 
-    // TODO: add option to turn on and off maybe -s for show
-    if (show)
-        // display the resulting frame
+    if (show) // display the resulting frame
         imshow("Frame", frame);
+
+    return frame;
 }
 
 void frameBufferManager(FrameQueue &frame_queue, cv::VideoWriter &video, bool show) {
     while (true) {
         cv::Mat frame = frame_queue.wait_and_pop();
-        if (frame.empty())
+        if (frame.empty()) // check for empty frames - end of work
             break;
-        process(frame, video, show);
+        frame = process(frame, show);
+        // write the frame to file
+        video.write(frame);
     }
 }
 
-void usage(std::ostream &stream, std::string file_name) { stream << "usage: " << file_name << " <input file> <output>\n"; }
+void usage(std::ostream &stream, std::string file_name) {
+    stream << "usage: " << file_name << " <input file> <output>\n\
+\tcan add in the end: -s for showing in realtime\n";
+}
 
 int main(int argc, char const *argv[]) {
     if (argc < 3) {
         usage(std::cout, argv[0]);
         return 1;
     }
+
+    bool show = false;
+    if (argc == 4) {
+        if (!strcmp(argv[3], "-s")) {
+            show = true;
+        } else {
+            usage(std::cout, argv[0]);
+            return 1;
+        }
+    }
+
     std::string input_file = argv[1];
     std::string output_file = argv[2];
 
@@ -91,7 +104,7 @@ int main(int argc, char const *argv[]) {
 
     // check if opened successfully
     if (!cap.isOpened()) {
-        std::cout << "Error opening video stream or file" << std::endl;
+        std::cerr << "Error opening video stream or file" << std::endl;
         return 1;
     }
 
@@ -102,9 +115,12 @@ int main(int argc, char const *argv[]) {
 
     // define the codec and create VideoWriter object
     cv::VideoWriter video(output_file, cv::VideoWriter::fourcc('a', 'v', 'c', '1'), fps, cv::Size(frame_width, frame_height));
-
+    if (!video.isOpened()) {
+        std::cerr << "Error opening video stream or file" << std::endl;
+        return 1;
+    }
     FrameQueue frame_queue;
-    std::thread thread_frames(frameBufferManager, std::ref(frame_queue), std::ref(video), true);
+    std::thread thread_frames(frameBufferManager, std::ref(frame_queue), std::ref(video), show);
 
     auto timer_last = std::chrono::high_resolution_clock::now();
     while (true) {
@@ -126,7 +142,6 @@ int main(int argc, char const *argv[]) {
         if (frame.empty())
             break;
 
-        // TODO: send frame to thread
         frame_queue.push_work(frame);
 
         // press ESC on keyboard to exit
