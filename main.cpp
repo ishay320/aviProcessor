@@ -13,14 +13,19 @@ int main(int argc, char const *argv[]) {
     std::string input_file;
     std::string output_file;
     bool show;
-    int err = parser(argc, argv, input_file, output_file, show);
+    bool camera;
+    int err = parser(argc, argv, input_file, output_file, show, camera);
     if (err == 1) {
         usage(std::cout, argv[0]);
         return 1;
     }
 
     // create a VideoCapture object and open the input file
-    cv::VideoCapture cap(input_file);
+    cv::VideoCapture cap;
+    if (camera) {
+        cap.open(0);
+    } else
+        cap.open(input_file);
 
     // check if opened successfully
     if (!cap.isOpened()) {
