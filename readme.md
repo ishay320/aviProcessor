@@ -4,11 +4,12 @@
 - use C++11
 
 # the files
-
-- dependencies.bash : is to install dependencies like openCV
-- makefile : is to compile my code
-- main.cpp : is the main code
-- test.cpp : is the testing with doctest
+|file | usage|
+|-----|------|
+| dependencies.bash | to install dependencies like openCV|
+| makefile | to compile my code|
+| main.cpp | the main code|
+| test.cpp | the testing with doctest|
 <!-- - dockerfile : is for ease of cleaning -->
 
 # running the code
@@ -21,4 +22,5 @@ can add `DEBUG=1` to make to show debug info:
 ```bash
 $ make DEBUG=1
 ```
-press ESC to stop at any time
+- press <kbd>ESC</kbd> to stop from the preview screen.
+- <kbd>ctrl</kbd>+<kbd>c</kbd> do graceful exit.
