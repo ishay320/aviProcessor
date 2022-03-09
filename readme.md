@@ -16,7 +16,9 @@
 
 ```bash
 $ make
-$ ./main <input file | -c for camera> <output> -s
+$ ./main <input file> <output> -s
+or
+$ ./main <output> -s -c
 ```
 can add `DEBUG=1` to make to show debug info:
 ```bash
