@@ -4,18 +4,21 @@
 
 #include "parser.hpp"
 
-bool getArg(int argc, char const *argv[], char arg_name) {
+
+int getArgPosition(int argc, char const *argv[], char arg_name) {
     std::string arg;
     arg += "-";
     arg += arg_name;
 
     for (int i = 0; i < argc; i++) {
         if (argv[i] == arg) {
-            return true;
+            return i;
         }
     }
-    return false;
+    return -1;
 }
+
+inline bool getArg(int argc, char const *argv[], char arg_name) { return getArgPosition(argc, argv, arg_name) == -1 ? false : true; }
 
 // TODO: regex the file ([\d|\w]+\..+)
 std::string getFileName(int argc, char const *argv[], int pos) {
