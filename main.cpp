@@ -34,9 +34,9 @@ int main(int argc, char const *argv[]) {
     cv::VideoCapture cap;
     if (camera) {
         cap.open(0);
-    } else
+    } else {
         cap.open(input_file);
-
+    }
     // check if opened successfully
     if (!cap.isOpened()) {
         std::cerr << "Error opening video stream or file" << std::endl;

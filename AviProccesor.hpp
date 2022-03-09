@@ -22,6 +22,6 @@ class FrameQueue {
 
 double randomWait();
 
-cv::Mat process(cv::Mat &frame);
+cv::Mat process(const cv::Mat &frame);
 
 void frameBufferManager(FrameQueue &frame_queue, cv::VideoWriter &video, bool show);

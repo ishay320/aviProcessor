@@ -45,17 +45,19 @@ double randomWait() {
     return (r * 60 * 1000);
 }
 
-cv::Mat process(cv::Mat &frame) {
+cv::Mat process(const cv::Mat &frame) {
+    cv::Mat copy_frame;
+    frame.copyTo(copy_frame);
+
     std::vector<int> markerIds;
     std::vector<std::vector<cv::Point2f>> markerCorners, rejectedCandidates;
     cv::Ptr<cv::aruco::DetectorParameters> parameters = cv::aruco::DetectorParameters::create();
     cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
-    cv::aruco::detectMarkers(frame, dictionary, markerCorners, markerIds, parameters, rejectedCandidates);
-
-    cv::aruco::drawDetectedMarkers(frame, markerCorners, markerIds);
+    cv::aruco::detectMarkers(copy_frame, dictionary, markerCorners, markerIds, parameters, rejectedCandidates);
+    cv::aruco::drawDetectedMarkers(copy_frame, markerCorners, markerIds);
     randomWait();
 
-    return frame;
+    return copy_frame;
 }
 
 void frameBufferManager(FrameQueue &frame_queue, cv::VideoWriter &video, bool show) {
