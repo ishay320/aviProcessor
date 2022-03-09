@@ -2,12 +2,20 @@
 
 #include <chrono>
 #include <iostream>
+#include <signal.h>
 #include <string>
 #include <thread>
 #include <unistd.h>
 
 #include "AviProccesor.hpp"
 #include "parser.hpp"
+
+bool there_is_work = true;
+
+void signal_callback(int signum) {
+    std::cout << "\nexiting gracefully\n";
+    there_is_work = false;
+}
 
 int main(int argc, char const *argv[]) {
     std::string input_file;
@@ -19,6 +27,8 @@ int main(int argc, char const *argv[]) {
         usage(std::cout, argv[0]);
         return 1;
     }
+
+    signal(SIGINT, signal_callback);
 
     // create a VideoCapture object and open the input file
     cv::VideoCapture cap;
@@ -50,7 +60,7 @@ int main(int argc, char const *argv[]) {
     std::thread thread_frames(frameBufferManager, std::ref(frame_queue), std::ref(video), show);
 
     auto timer_last = std::chrono::high_resolution_clock::now();
-    while (true) {
+    while (there_is_work) {
         auto timer_now = std::chrono::high_resolution_clock::now();
         std::chrono::microseconds delta = std::chrono::duration_cast<std::chrono::microseconds>(timer_now - timer_last);
         if (delta.count() / 1000 < 40) { // wait the time that left
