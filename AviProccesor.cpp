@@ -1,3 +1,4 @@
+#include <opencv2/aruco.hpp>
 #include <opencv2/opencv.hpp>
 
 #include <condition_variable>
@@ -45,8 +46,13 @@ double randomWait() {
 }
 
 cv::Mat process(cv::Mat &frame) {
-    cv::putText(frame, "Big Buck Bunny", cv::Point(0, 200), cv::FONT_HERSHEY_DUPLEX, 0.7, cv::Scalar(0, 0, 0), 2, false);
+    std::vector<int> markerIds;
+    std::vector<std::vector<cv::Point2f>> markerCorners, rejectedCandidates;
+    cv::Ptr<cv::aruco::DetectorParameters> parameters = cv::aruco::DetectorParameters::create();
+    cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
+    cv::aruco::detectMarkers(frame, dictionary, markerCorners, markerIds, parameters, rejectedCandidates);
 
+    cv::aruco::drawDetectedMarkers(frame, markerCorners, markerIds);
     randomWait();
 
     return frame;
