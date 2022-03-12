@@ -72,6 +72,8 @@ void frameBufferManager(FrameQueue &frame_queue, cv::VideoWriter &video, bool sh
             imshow("Frame", frame);
 
         // write the frame to file
-        video.write(frame);
+        if (video.isOpened()) {
+            video.write(frame);
+        }
     }
 }

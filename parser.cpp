@@ -20,6 +20,15 @@ int getArgPosition(int argc, char const *argv[], char arg_name) {
 
 inline bool getArg(int argc, char const *argv[], char arg_name) { return getArgPosition(argc, argv, arg_name) == -1 ? false : true; }
 
+std::string getArgStr(int argc, char const *argv[], char arg_name) {
+    int pos = getArgPosition(argc, argv, arg_name);
+    if (pos + 1 > argc || pos == -1) {
+        return std::string();
+    }
+
+    return std::string(argv[pos + 1]);
+}
+
 // TODO: regex the file ([\d|\w]+\..+)
 std::string getFileName(int argc, char const *argv[], int pos) {
     if (argv[pos][0] != '-') {
@@ -30,7 +39,7 @@ std::string getFileName(int argc, char const *argv[], int pos) {
 }
 
 void usage(std::ostream &stream, std::string file_name) {
-    stream << "usage: " << file_name << " <input file?> <output> [options]\n\
+    stream << "usage: " << file_name << " -i <input file> -o <output> [options]\n\
 \toptions: -s for showing in realtime\n\
 \t\t -c for camera input (can remove the input arg)\n";
 }
@@ -42,18 +51,16 @@ int parser(int argc, char const *argv[], std::string &input_file, std::string &o
 
     show = getArg(argc, argv, 's');
     camera = getArg(argc, argv, 'c');
-    std::cerr << show;
 
-    input_file = getFileName(argc, argv, 1);
-    if (input_file.empty())
+    input_file = getArgStr(argc, argv, 'i');
+    output_file = getArgStr(argc, argv, 'o');
+
+    if (input_file.empty() && !camera) {
         return 1;
-    output_file = getFileName(argc, argv, 2);
-    if (output_file.empty()) {
-        if (!camera) {
-            return 1;
-        }
+    }
 
-        output_file = input_file;
+    if (output_file.empty() && !show) {
+        return 1;
     }
     return 0;
 }

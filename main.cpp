@@ -49,10 +49,14 @@ int main(int argc, char const *argv[]) {
     double fps = cap.get(cv::CAP_PROP_FPS);
 
     // define the codec and create VideoWriter object
-    cv::VideoWriter video(output_file, cv::VideoWriter::fourcc('a', 'v', 'c', '1'), fps, cv::Size(frame_width, frame_height));
-    if (!video.isOpened()) {
-        std::cerr << "Error opening video stream or file" << std::endl;
-        return 1;
+    cv::VideoWriter video;
+    if (!output_file.empty()) {
+        video = cv::VideoWriter{output_file, cv::VideoWriter::fourcc('a', 'v', 'c', '1'), fps, cv::Size(frame_width, frame_height)};
+
+        if (!video.isOpened()) {
+            std::cerr << "Error opening video stream or file" << std::endl;
+            return 1;
+        }
     }
 
     // start the processing thread and his queue
