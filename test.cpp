@@ -9,27 +9,29 @@
 
 TEST_CASE("parsing test") {
     SUBCASE("without show") {
-        int argc = 3;
-        const char *argv[] = {"one", "two", "three"};
+        int argc = 5;
+        const char *argv[] = {"one", "-o", "outfile", "-i", "infile"};
         std::string input_file;
         std::string output_file;
         bool show;
-        CHECK_EQ(parser(argc, argv, input_file, output_file, show), 0);
+        bool camera;
+        CHECK_EQ(parser(argc, argv, input_file, output_file, show, camera), 0);
 
-        CHECK_EQ(input_file, "two");
-        CHECK_EQ(output_file, "three");
+        CHECK_EQ(input_file, "infile");
+        CHECK_EQ(output_file, "outfile");
         CHECK_EQ(show, false);
     }
     SUBCASE("with show") {
-        int argc = 4;
-        const char *argv[] = {"one", "two", "three", "-s"};
+        int argc = 6;
+        const char *argv[] = {"one", "-o", "outfile", "-i", "infile", "-s"};
         std::string input_file;
         std::string output_file;
         bool show;
-        CHECK_EQ(parser(argc, argv, input_file, output_file, show), 0);
+        bool camera;
+        CHECK_EQ(parser(argc, argv, input_file, output_file, show, camera), 0);
 
-        CHECK_EQ(input_file, "two");
-        CHECK_EQ(output_file, "three");
+        CHECK_EQ(input_file, "infile");
+        CHECK_EQ(output_file, "outfile");
         CHECK_EQ(show, true);
     }
     SUBCASE("parsing error") {
@@ -38,7 +40,8 @@ TEST_CASE("parsing test") {
         std::string input_file;
         std::string output_file;
         bool show;
-        CHECK_EQ(parser(argc, argv, input_file, output_file, show), 1);
+        bool camera;
+        CHECK_EQ(parser(argc, argv, input_file, output_file, show, camera), 1);
     }
 }
 TEST_CASE("avi processor") {
