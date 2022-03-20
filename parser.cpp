@@ -1,6 +1,7 @@
 #include <cstring>
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "parser.hpp"
 
@@ -62,4 +63,25 @@ int parser(int argc, char const *argv[], std::string &input_file, std::string &o
         return 1;
     }
     return 0;
+}
+
+// string: token | string: default | string: usage
+std::vector<std::vector<std::string>> g_keys_vec;
+// TODO: save the container maybe add: type and void* to g_keys_vec
+void parseExist(std::string token, std::string usage, bool *container) {
+    std::vector<std::string> key;
+    key.push_back(token);
+    key.push_back("false");
+    key.push_back(usage);
+    g_keys_vec.push_back(key);
+}
+
+void parserPrint(void) {
+    for (auto &&i : g_keys_vec) {
+        for (auto &&j : i) {
+            std::cout << j << '\t';
+        }
+        std::cout << '\n';
+    }
+    std::cout << '\n';
 }
