@@ -4,6 +4,7 @@
 
 #include "parser.hpp"
 
+static std::string g_usage_str;
 
 int getArgPosition(int argc, char const *argv[], char arg_name) {
     std::string arg;
@@ -38,11 +39,9 @@ std::string getFileName(int argc, char const *argv[], int pos) {
     return std::string();
 }
 
-void usage(std::ostream &stream, std::string file_name) {
-    stream << "usage: " << file_name << " -i <input file> -o <output> [options]\n\
-\toptions: -s for showing in realtime\n\
-\t\t -c for camera input (can remove the input arg)\n";
-}
+void addUsage(std::string usage) { g_usage_str = usage; }
+
+void usage(std::ostream &stream, std::string file_name) { stream << "usage: " << file_name << g_usage_str << '\n'; }
 
 int parser(int argc, char const *argv[], std::string &input_file, std::string &output_file, bool &show, bool &camera) {
     if (argc < 3) {
