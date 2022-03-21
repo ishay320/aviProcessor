@@ -1,9 +1,11 @@
 #include <cstring>
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "parser.hpp"
 
+static std::string g_usage_str;
 
 int getArgPosition(int argc, char const *argv[], char arg_name) {
     std::string arg;
@@ -38,11 +40,9 @@ std::string getFileName(int argc, char const *argv[], int pos) {
     return std::string();
 }
 
-void usage(std::ostream &stream, std::string file_name) {
-    stream << "usage: " << file_name << " -i <input file> -o <output> [options]\n\
-\toptions: -s for showing in realtime\n\
-\t\t -c for camera input (can remove the input arg)\n";
-}
+void addUsage(std::string usage) { g_usage_str = usage; }
+
+void usage(std::ostream &stream, std::string file_name) { stream << "usage: " << file_name << g_usage_str << '\n'; }
 
 int parser(int argc, char const *argv[], std::string &input_file, std::string &output_file, bool &show, bool &camera) {
     if (argc < 3) {
@@ -63,4 +63,147 @@ int parser(int argc, char const *argv[], std::string &input_file, std::string &o
         return 1;
     }
     return 0;
+}
+
+class Token {
+    // for parsing: int | bool | string | float
+  private:
+    char type;
+    bool *b;
+    int *i;
+    std::string *s;
+    float *f;
+
+    std::string token;
+    std::string usage;
+
+  public:
+    Token(std::string token, std::string usage, bool *b, int *i, std::string *s, float *f) {
+        this->b = b;
+        this->i = i;
+        this->s = s;
+        this->f = f;
+
+        this->token = token;
+        this->usage = usage;
+    }
+
+    // TODO: check for size of token: -- or - or custom
+    std::string getToken() { return "-" + this->token; }
+    std::string getUsage() { return this->usage; }
+
+    char getType() {
+        if (this->b != nullptr) {
+            return 'b';
+        } else if (this->i != nullptr) {
+            return 'i';
+        } else if (this->s != nullptr) {
+            return 's';
+        } else if (this->f != nullptr) {
+            return 'f';
+        } else {
+            return '?';
+        }
+    }
+    bool getBool() { return *(this->b); }
+    int getInt() { return *(this->i); }
+    std::string getString() { return *(this->s); }
+    float getFloat() { return *(this->f); }
+
+    void setBool(bool b) { *(this->b) = b; }
+    void setInt(int i) { *(this->i) = i; }
+    void setString(std::string s) { *(this->s) = s; }
+    void setFloat(float f) { *(this->f) = f; }
+};
+
+std::vector<Token> g_container_vec;
+
+void parseExist(std::string token, std::string usage, bool *container) {
+    Token con{token, usage, container, nullptr, nullptr, nullptr};
+    g_container_vec.push_back(con);
+}
+
+void parseString(std::string token, std::string default_opt, std::string usage, std::string *container) {
+    Token con{token, usage, nullptr, nullptr, container, nullptr};
+    con.setString(default_opt);
+    g_container_vec.push_back(con);
+}
+
+void parseInt(std::string token, int default_opt, std::string usage, int *container) {
+    Token con{token, usage, nullptr, container, nullptr, nullptr};
+    con.setInt(default_opt);
+    g_container_vec.push_back(con);
+}
+
+void parseFloat(std::string token, float default_opt, std::string usage, float *container) {
+    Token con{token, usage, nullptr, nullptr, nullptr, container};
+    con.setFloat(default_opt);
+    g_container_vec.push_back(con);
+}
+
+void parserPrint(void) {
+    std::cout << "***********\n";
+    for (auto &&i : g_container_vec) {
+        char type = i.getType();
+        switch (type) {
+        case 'b':
+            std::cout << "token: " << i.getToken() << " |usage: " << i.getUsage() << " |type: bool -> " << i.getBool() << std::endl;
+            break;
+        case 'i':
+            std::cout << "token: " << i.getToken() << " |usage: " << i.getUsage() << " |type: int -> " << i.getInt() << std::endl;
+            break;
+        case 's':
+            std::cout << "token: " << i.getToken() << " |usage: " << i.getUsage() << " |type: string -> " << i.getString() << std::endl;
+            break;
+        case 'f':
+            std::cout << "token: " << i.getToken() << " |usage: " << i.getUsage() << " |type: float -> " << i.getFloat() << std::endl;
+            break;
+        case '?':
+            std::cout << "token: " << i.getToken() << " |usage: " << i.getUsage() << " |type: ??????" << std::endl;
+            break;
+        default:
+            break;
+        }
+    }
+    std::cout << "***********\n";
+}
+
+std::string parseAll(int argc, char const *argv[]) {
+    for (int i = 1; i < argc; i++) {
+        for (auto &&key : g_container_vec) {
+            if (key.getToken().compare(argv[i]) == 0) {
+                switch (key.getType()) {
+                case 'b':
+                    key.setBool(true);
+                    break;
+                case 's':
+                    if (i + 1 < argc) {
+                        key.setString(argv[++i]);
+                    } else {
+                        return "ERROR: string don't have value in token \"" + key.getToken() + "\"";
+                    }
+                    break;
+                case 'i':
+                    if (i + 1 < argc) {
+                        key.setInt(std::stoi(argv[++i]));
+                    } else {
+                        return "ERROR: int don't have value in token \"" + key.getToken() + "\"";
+                    }
+                    break;
+                case 'f':
+                    if (i + 1 < argc) {
+                        key.setInt(std::stof(argv[++i]));
+                    } else {
+                        return "ERROR: float don't have value in token \"" + key.getToken() + "\"";
+                    }
+                    break;
+                default:
+                    return "ERROR: token is not recognize: " + key.getType();
+                    break;
+                }
+                break;
+            }
+        }
+    }
+    return std::string{};
 }

@@ -18,6 +18,11 @@ void signal_callback(int signum) {
 }
 
 int main(int argc, char const *argv[]) {
+    std::string usage_str = " -i <input file> -o <output> [options]\n"
+                            "\toptions: -s for showing in realtime\n"
+                            "\t\t -c for camera input (can remove the input arg)\n";
+    addUsage(usage_str);
+
     std::string input_file;
     std::string output_file;
     bool show;
