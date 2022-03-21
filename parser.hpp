@@ -27,8 +27,9 @@ void parseFloat(std::string token, float default_opt, std::string usage, float *
  *
  * @param argc count of words
  * @param argv array of words, with the first in the array the main file name
+ * @return empty string or error
  */
-void parseAll(int argc, char const *argv[]);
+std::string parseAll(int argc, char const *argv[]);
 
 /**
  * @brief print all the parser tokens

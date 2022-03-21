@@ -165,11 +165,10 @@ void parserPrint(void) {
             break;
         }
     }
-
     std::cout << "***********\n";
 }
 
-void parseAll(int argc, char const *argv[]) {
+std::string parseAll(int argc, char const *argv[]) {
     for (int i = 1; i < argc; i++) {
         for (auto &&key : g_container_vec) {
             if (key.getToken().compare(argv[i]) == 0) {
@@ -178,32 +177,33 @@ void parseAll(int argc, char const *argv[]) {
                     key.setBool(true);
                     break;
                 case 's':
-                    if (i < argc) {
+                    if (i + 1 < argc) {
                         key.setString(argv[++i]);
                     } else {
-                        // TODO: throw error
+                        return "ERROR: string don't have value in token \"" + key.getToken() + "\"";
                     }
                     break;
                 case 'i':
-                    if (i < argc) {
+                    if (i + 1 < argc) {
                         key.setInt(std::stoi(argv[++i]));
                     } else {
-                        // TODO: throw error
+                        return "ERROR: int don't have value in token \"" + key.getToken() + "\"";
                     }
                     break;
                 case 'f':
-                    if (i < argc) {
+                    if (i + 1 < argc) {
                         key.setInt(std::stof(argv[++i]));
                     } else {
-                        // TODO: throw error
+                        return "ERROR: float don't have value in token \"" + key.getToken() + "\"";
                     }
                     break;
                 default:
-                    // TODO: throw error
+                    return "ERROR: token is not recognize: " + key.getType();
                     break;
                 }
                 break;
             }
         }
     }
+    return std::string{};
 }
