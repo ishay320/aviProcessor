@@ -1,9 +1,9 @@
 main
-stream_part6.mp4
-test.mp4
 .vscode
 Dockerfile
 .dockerignore
 *.o
 test
 calibration
+*.mp4
+*.json
