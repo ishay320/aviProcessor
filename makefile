@@ -12,6 +12,12 @@ endif
 main: main.cpp $(OBJECTS)
 	g++ -o $@ $^ $(CFLAGS) $(LIB)
 
+arucoTest: arucoTest.cpp $(OBJECTS)
+	g++ -o $@ $^ $(CFLAGS) $(LIB)
+
+calibration: calibration.cpp $(OBJECTS)
+	g++ -o $@ $^ $(CFLAGS) $(LIB)
+
 test: test.cpp $(OBJECTS)
 	g++ -o $@ $^ $(CFLAGS) $(LIB)
 
