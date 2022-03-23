@@ -34,6 +34,6 @@ test: test.cpp $(OBJECTS)
 	g++ $(CFLAGS) --compile $< -o $@
 
 clean:
-	rm -f main test *.o
+	rm -f main test *.o arucoTest calibration createBoard calibrateCharuco createCharuco
 	
-.PHONY: clean
+.PHONY: clean 
