@@ -18,6 +18,15 @@ arucoTest: arucoTest.cpp $(OBJECTS)
 calibration: calibration.cpp $(OBJECTS)
 	g++ -o $@ $^ $(CFLAGS) $(LIB)
 
+createBoard: createBoard.cpp $(OBJECTS)
+	g++ -o $@ $^ $(CFLAGS) $(LIB)
+
+calibrateCharuco: calibrateCharuco.cpp $(OBJECTS)
+	g++ -o $@ $^ $(CFLAGS) $(LIB)
+
+createCharuco: createCharuco.cpp $(OBJECTS)
+	g++ -o $@ $^ $(CFLAGS) $(LIB)
+
 test: test.cpp $(OBJECTS)
 	g++ -o $@ $^ $(CFLAGS) $(LIB)
 
